@@ -26,7 +26,7 @@ public partial class HotelDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<RoomType> RoomTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=Blackpearl\\SQLEXPRESS;Database=hotel;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=hotel;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

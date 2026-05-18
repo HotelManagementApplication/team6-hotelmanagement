@@ -1,6 +1,7 @@
 ﻿using HotelManagement.API.Modules.PaymentModule.DTOs;
 using HotelManagement.Common.Models;
 using HotelManagement.API.Modules.PaymentModule.Repositories;
+using HotelManagement.API.Exceptions;
 
 namespace HotelManagement.API.Modules.PaymentModule.Services;
 
@@ -28,7 +29,7 @@ public class PaymentService : IPaymentService
         var reservationExists = await _repository.ReservationExistsAsync(dto.ReservationId);
 
         if (!reservationExists)
-            return null;
+            throw new NotFoundException("Reservation not found");
 
         var payment = new Payment
         {

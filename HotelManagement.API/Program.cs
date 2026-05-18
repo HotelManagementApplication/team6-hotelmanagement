@@ -133,18 +133,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-using (var  scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-    db.Database.Migrate();
-    
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roleNames = [ "Admin", "User" ];
-    
-    foreach (var roleName in roleNames)
-        if (!await roleManager.RoleExistsAsync(roleName))
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-}
-
 app.Run();
+
+//using (var  scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
+//    db.Database.Migrate();
+
+//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//    string[] roleNames = [ "Admin", "User" ];
+
+//    foreach (var roleName in roleNames)
+//        if (!await roleManager.RoleExistsAsync(roleName))
+//            await roleManager.CreateAsync(new IdentityRole(roleName));
+//}
+
+

@@ -1,5 +1,8 @@
-﻿using HotelManagement.API.Modules.PaymentModule.DTOs;
+﻿using HotelManagement.API.DTOs;
+using HotelManagement.API.Exceptions;
+using HotelManagement.API.Modules.PaymentModule.DTOs;
 using HotelManagement.API.Modules.PaymentModule.Services;
+using HotelManagement.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagement.API.Modules.PaymentModule.Controllers;
@@ -14,7 +17,14 @@ public class PaymentController(IPaymentService service) : ControllerBase
     public async Task<IActionResult> GetPayments()
     {
         var payments = await _service.GetAllPaymentsAsync();
-        return Ok(payments);
+
+        return Ok(new ApiResponse<IEnumerable<Payment>>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payments fetched successfully.",
+            Data = payments
+        });
     }
 
     [HttpGet("{id}")]
@@ -23,9 +33,15 @@ public class PaymentController(IPaymentService service) : ControllerBase
         var payment = await _service.GetPaymentByIdAsync(id);
 
         if (payment == null)
-            return NotFound("Payment not found.");
+            throw new NotFoundException("Payment not found.");
 
-        return Ok(payment);
+        return Ok(new ApiResponse<Payment>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payment fetched successfully.",
+            Data = payment
+        });
     }
 
     [HttpPost]
@@ -34,9 +50,20 @@ public class PaymentController(IPaymentService service) : ControllerBase
         var payment = await _service.CreatePaymentAsync(dto);
 
         if (payment == null)
-            return BadRequest("Reservation does not exist.");
+            throw new BadRequestException("Reservation does not exist.");
 
-        return CreatedAtAction(nameof(GetPayment), new { id = payment.PaymentId }, payment);
+        var response = new ApiResponse<Payment>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status201Created,
+            Message = "Payment created successfully.",
+            Data = payment
+        };
+
+        return CreatedAtAction(
+            nameof(GetPayment),
+            new { id = payment.PaymentId },
+            response);
     }
 
     [HttpPut("{id}")]
@@ -45,9 +72,15 @@ public class PaymentController(IPaymentService service) : ControllerBase
         var payment = await _service.UpdatePaymentAsync(id, dto);
 
         if (payment == null)
-            return NotFound("Payment not found.");
+            throw new NotFoundException("Payment not found.");
 
-        return Ok(payment);
+        return Ok(new ApiResponse<Payment>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payment updated successfully.",
+            Data = payment
+        });
     }
 
     [HttpDelete("{id}")]
@@ -56,43 +89,77 @@ public class PaymentController(IPaymentService service) : ControllerBase
         var result = await _service.DeletePaymentAsync(id);
 
         if (!result)
-            return NotFound("Payment not found.");
+            throw new NotFoundException("Payment not found.");
 
-        return Ok("Payment deleted successfully.");
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payment deleted successfully.",
+            Data = null
+        });
     }
 
     [HttpGet("by-reservation/{reservationId}")]
     public async Task<IActionResult> GetPaymentsByReservation(int reservationId)
     {
         var payments = await _service.GetPaymentsByReservationAsync(reservationId);
-        return Ok(payments);
+
+        return Ok(new ApiResponse<IEnumerable<Payment>>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Reservation payments fetched successfully.",
+            Data = payments
+        });
     }
 
     [HttpGet("successful")]
     public async Task<IActionResult> GetSuccessfulPayments()
     {
         var payments = await _service.GetSuccessfulPaymentsAsync();
-        return Ok(payments);
+
+        return Ok(new ApiResponse<IEnumerable<Payment>>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Successful payments fetched successfully.",
+            Data = payments
+        });
     }
 
     [HttpGet("failed")]
     public async Task<IActionResult> GetFailedPayments()
     {
         var payments = await _service.GetFailedPaymentsAsync();
-        return Ok(payments);
+
+        return Ok(new ApiResponse<IEnumerable<Payment>>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Failed payments fetched successfully.",
+            Data = payments
+        });
     }
 
     [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdatePaymentStatus(int id, PaymentStatusUpdateDto dto)
+    public async Task<IActionResult> UpdatePaymentStatus(
+        int id,
+        PaymentStatusUpdateDto dto)
     {
         var payment = await _service.UpdatePaymentStatusAsync(id, dto);
 
         if (payment == null)
-            return NotFound("Payment not found.");
+            throw new NotFoundException("Payment not found.");
 
-        return Ok(payment);
+        return Ok(new ApiResponse<Payment>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payment status updated successfully.",
+            Data = payment
+        });
     }
-
 
     [HttpPost("{id}/refund")]
     public async Task<IActionResult> RefundPayment(int id)
@@ -100,8 +167,15 @@ public class PaymentController(IPaymentService service) : ControllerBase
         var payment = await _service.RefundPaymentAsync(id);
 
         if (payment == null)
-            return BadRequest("Payment not found or only successful payments can be refunded.");
+            throw new BadRequestException(
+                "Payment not found or payment is not eligible for refund.");
 
-        return Ok(payment);
+        return Ok(new ApiResponse<Payment>
+        {
+            Success = true,
+            StatusCode = StatusCodes.Status200OK,
+            Message = "Payment refunded successfully.",
+            Data = payment
+        });
     }
 }
