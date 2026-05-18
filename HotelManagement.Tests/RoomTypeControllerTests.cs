@@ -1,6 +1,7 @@
-using HotelManagement.API.Controllers;
+using HotelManagement.API.Modules.RoomTypeModule.Controllers;
 using HotelManagement.API.DTOs;
-using HotelManagement.API.Services;
+using HotelManagement.API.Modules.RoomTypeModule.DTOs;
+using HotelManagement.API.Modules.RoomTypeModule.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

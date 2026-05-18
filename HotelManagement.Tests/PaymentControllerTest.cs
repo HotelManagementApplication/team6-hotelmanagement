@@ -1,4 +1,6 @@
 using FluentAssertions;
+using HotelManagement.API.DTOs;
+using HotelManagement.API.Exceptions;
 using HotelManagement.API.Modules.PaymentModule.Controllers;
 using HotelManagement.API.Modules.PaymentModule.DTOs;
 using HotelManagement.API.Modules.PaymentModule.Services;
@@ -19,143 +21,215 @@ public class PaymentControllerTest
         _controller = new PaymentController(_serviceMock.Object);
     }
 
-    #region POSITIVE TEST CASES
+    // =========================
+    // 4 POSITIVE TEST CASES
+    // =========================
 
     [Fact]
-    public async Task GetPayments_ShouldReturnOk_WhenPaymentsExist()
+    public async Task GetPayments_ShouldReturnOk_WithApiResponse()
     {
         var payments = new List<Payment>
         {
-            new() { PaymentId = 1, ReservationId = 11, Amount = 150m, PaymentStatus = "Completed" },
-            new() { PaymentId = 2, ReservationId = 12, Amount = 250m, PaymentStatus = "Pending" }
+            new() { PaymentId = 1, ReservationId = 1, Amount = 100, PaymentStatus = "Paid" },
+            new() { PaymentId = 2, ReservationId = 2, Amount = 160, PaymentStatus = "Refunded" }
         };
 
-        _serviceMock.Setup(service => service.GetAllPaymentsAsync()).ReturnsAsync(payments);
+        _serviceMock.Setup(s => s.GetAllPaymentsAsync())
+            .ReturnsAsync(payments);
 
         var result = await _controller.GetPayments();
 
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeSameAs(payments);
-        _serviceMock.Verify(service => service.GetAllPaymentsAsync(), Times.Once);
+        var response = okResult.Value.Should()
+            .BeOfType<ApiResponse<IEnumerable<Payment>>>()
+            .Subject;
+
+        response.Success.Should().BeTrue();
+        response.StatusCode.Should().Be(200);
+        response.Message.Should().Be("Payments fetched successfully.");
+        response.Data.Should().BeEquivalentTo(payments);
+
+        _serviceMock.Verify(s => s.GetAllPaymentsAsync(), Times.Once);
     }
 
     [Fact]
     public async Task GetPayment_ShouldReturnOk_WhenPaymentExists()
     {
-        const int paymentId = 1;
-        var payment = new Payment { PaymentId = paymentId, ReservationId = 5, Amount = 300m, PaymentStatus = "Completed" };
+        var payment = new Payment
+        {
+            PaymentId = 1,
+            ReservationId = 1,
+            Amount = 100,
+            PaymentStatus = "Paid"
+        };
 
-        _serviceMock.Setup(service => service.GetPaymentByIdAsync(paymentId)).ReturnsAsync(payment);
+        _serviceMock.Setup(s => s.GetPaymentByIdAsync(1))
+            .ReturnsAsync(payment);
 
-        var result = await _controller.GetPayment(paymentId);
+        var result = await _controller.GetPayment(1);
 
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeSameAs(payment);
-        _serviceMock.Verify(service => service.GetPaymentByIdAsync(paymentId), Times.Once);
+        var response = okResult.Value.Should()
+            .BeOfType<ApiResponse<Payment>>()
+            .Subject;
+
+        response.Success.Should().BeTrue();
+        response.StatusCode.Should().Be(200);
+        response.Message.Should().Be("Payment fetched successfully.");
+        response.Data.Should().BeEquivalentTo(payment);
+
+        _serviceMock.Verify(s => s.GetPaymentByIdAsync(1), Times.Once);
     }
 
     [Fact]
-    public async Task CreatePayment_ShouldReturnCreated_WhenReservationExists()
+    public async Task CreatePayment_ShouldReturnCreated_WhenPaymentCreated()
     {
-        var dto = new PaymentCreateDto { ReservationId = 8, Amount = 125m, PaymentStatus = "Pending" };
-        var createdPayment = new Payment { PaymentId = 10, ReservationId = dto.ReservationId, Amount = dto.Amount, PaymentStatus = dto.PaymentStatus };
+        var dto = new PaymentCreateDto
+        {
+            ReservationId = 2,
+            Amount = 1000,
+            PaymentStatus = "Success"
+        };
 
-        _serviceMock.Setup(service => service.CreatePaymentAsync(dto)).ReturnsAsync(createdPayment);
+        var payment = new Payment
+        {
+            PaymentId = 1002,
+            ReservationId = 2,
+            Amount = 1000,
+            PaymentStatus = "Success"
+        };
+
+        _serviceMock.Setup(s => s.CreatePaymentAsync(dto))
+            .ReturnsAsync(payment);
 
         var result = await _controller.CreatePayment(dto);
 
         var createdResult = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+        var response = createdResult.Value.Should()
+            .BeOfType<ApiResponse<Payment>>()
+            .Subject;
+
         createdResult.StatusCode.Should().Be(201);
         createdResult.ActionName.Should().Be(nameof(PaymentController.GetPayment));
-        createdResult.RouteValues.Should().ContainKey("id");
-        createdResult.RouteValues!["id"].Should().Be(createdPayment.PaymentId);
-        createdResult.Value.Should().BeSameAs(createdPayment);
-        _serviceMock.Verify(service => service.CreatePaymentAsync(dto), Times.Once);
+        createdResult.RouteValues!["id"].Should().Be(payment.PaymentId);
+
+        response.Success.Should().BeTrue();
+        response.StatusCode.Should().Be(201);
+        response.Message.Should().Be("Payment created successfully.");
+        response.Data.Should().BeEquivalentTo(payment);
+
+        _serviceMock.Verify(s => s.CreatePaymentAsync(dto), Times.Once);
     }
 
     [Fact]
-    public async Task UpdatePayment_ShouldReturnOk_WhenPaymentExists()
+    public async Task UpdatePayment_ShouldReturnOk_WhenPaymentUpdated()
     {
-        const int paymentId = 2;
-        var dto = new PaymentUpdateDto { Amount = 175m, PaymentStatus = "Completed" };
-        var updatedPayment = new Payment { PaymentId = paymentId, ReservationId = 9, Amount = dto.Amount, PaymentStatus = dto.PaymentStatus };
+        var dto = new PaymentUpdateDto
+        {
+            Amount = 1500,
+            PaymentStatus = "Paid"
+        };
 
-        _serviceMock.Setup(service => service.UpdatePaymentAsync(paymentId, dto)).ReturnsAsync(updatedPayment);
+        var payment = new Payment
+        {
+            PaymentId = 1,
+            ReservationId = 1,
+            Amount = 1500,
+            PaymentStatus = "Paid"
+        };
 
-        var result = await _controller.UpdatePayment(paymentId, dto);
+        _serviceMock.Setup(s => s.UpdatePaymentAsync(1, dto))
+            .ReturnsAsync(payment);
+
+        var result = await _controller.UpdatePayment(1, dto);
 
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeSameAs(updatedPayment);
-        _serviceMock.Verify(service => service.UpdatePaymentAsync(paymentId, dto), Times.Once);
+        var response = okResult.Value.Should()
+            .BeOfType<ApiResponse<Payment>>()
+            .Subject;
+
+        response.Success.Should().BeTrue();
+        response.StatusCode.Should().Be(200);
+        response.Message.Should().Be("Payment updated successfully.");
+        response.Data.Should().BeEquivalentTo(payment);
+
+        _serviceMock.Verify(s => s.UpdatePaymentAsync(1, dto), Times.Once);
     }
 
-    #endregion
-
-    #region NEGATIVE TEST CASES
-
-    [Fact]
-    public async Task GetPayment_ShouldReturnNotFound_WhenPaymentDoesNotExist()
-    {
-        const int paymentId = 99;
-
-        _serviceMock.Setup(service => service.GetPaymentByIdAsync(paymentId)).ReturnsAsync((Payment?)null);
-
-        var result = await _controller.GetPayment(paymentId);
-
-        var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be("Payment not found.");
-        _serviceMock.Verify(service => service.GetPaymentByIdAsync(paymentId), Times.Once);
-    }
+    // =========================
+    // 4 NEGATIVE TEST CASES
+    // =========================
 
     [Fact]
-    public async Task CreatePayment_ShouldReturnBadRequest_WhenReservationDoesNotExist()
+    public async Task GetPayment_ShouldThrowNotFoundException_WhenPaymentDoesNotExist()
     {
-        var dto = new PaymentCreateDto { ReservationId = 404, Amount = 200m, PaymentStatus = "Pending" };
+        _serviceMock.Setup(s => s.GetPaymentByIdAsync(99))
+            .ReturnsAsync((Payment?)null);
 
-        _serviceMock.Setup(service => service.CreatePaymentAsync(dto)).ReturnsAsync((Payment?)null);
+        var act = async () => await _controller.GetPayment(99);
 
-        var result = await _controller.CreatePayment(dto);
+        await act.Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage("Payment not found.");
 
-        var badRequestResult = result.Should().BeOfType<BadRequestObjectResult>().Subject;
-        badRequestResult.StatusCode.Should().Be(400);
-        badRequestResult.Value.Should().Be("Reservation does not exist.");
-        _serviceMock.Verify(service => service.CreatePaymentAsync(dto), Times.Once);
+        _serviceMock.Verify(s => s.GetPaymentByIdAsync(99), Times.Once);
     }
 
     [Fact]
-    public async Task UpdatePayment_ShouldReturnNotFound_WhenPaymentDoesNotExist()
+    public async Task CreatePayment_ShouldThrowBadRequestException_WhenReservationDoesNotExist()
     {
-        const int paymentId = 77;
-        var dto = new PaymentUpdateDto { Amount = 210m, PaymentStatus = "Completed" };
+        var dto = new PaymentCreateDto
+        {
+            ReservationId = 999,
+            Amount = 1000,
+            PaymentStatus = "Paid"
+        };
 
-        _serviceMock.Setup(service => service.UpdatePaymentAsync(paymentId, dto)).ReturnsAsync((Payment?)null);
+        _serviceMock.Setup(s => s.CreatePaymentAsync(dto))
+            .ReturnsAsync((Payment?)null);
 
-        var result = await _controller.UpdatePayment(paymentId, dto);
+        var act = async () => await _controller.CreatePayment(dto);
 
-        var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be("Payment not found.");
-        _serviceMock.Verify(service => service.UpdatePaymentAsync(paymentId, dto), Times.Once);
+        await act.Should()
+            .ThrowAsync<BadRequestException>()
+            .WithMessage("Reservation does not exist.");
+
+        _serviceMock.Verify(s => s.CreatePaymentAsync(dto), Times.Once);
     }
 
     [Fact]
-    public async Task DeletePayment_ShouldReturnNotFound_WhenDeleteFails()
+    public async Task UpdatePayment_ShouldThrowNotFoundException_WhenPaymentDoesNotExist()
     {
-        const int paymentId = 55;
+        var dto = new PaymentUpdateDto
+        {
+            Amount = 1500,
+            PaymentStatus = "Paid"
+        };
 
-        _serviceMock.Setup(service => service.DeletePaymentAsync(paymentId)).ReturnsAsync(false);
+        _serviceMock.Setup(s => s.UpdatePaymentAsync(99, dto))
+            .ReturnsAsync((Payment?)null);
 
-        var result = await _controller.DeletePayment(paymentId);
+        var act = async () => await _controller.UpdatePayment(99, dto);
 
-        var notFoundResult = result.Should().BeOfType<NotFoundObjectResult>().Subject;
-        notFoundResult.StatusCode.Should().Be(404);
-        notFoundResult.Value.Should().Be("Payment not found.");
-        _serviceMock.Verify(service => service.DeletePaymentAsync(paymentId), Times.Once);
+        await act.Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage("Payment not found.");
+
+        _serviceMock.Verify(s => s.UpdatePaymentAsync(99, dto), Times.Once);
     }
 
-    #endregion
+    [Fact]
+    public async Task DeletePayment_ShouldThrowNotFoundException_WhenPaymentDoesNotExist()
+    {
+        _serviceMock.Setup(s => s.DeletePaymentAsync(99))
+            .ReturnsAsync(false);
+
+        var act = async () => await _controller.DeletePayment(99);
+
+        await act.Should()
+            .ThrowAsync<NotFoundException>()
+            .WithMessage("Payment not found.");
+
+        _serviceMock.Verify(s => s.DeletePaymentAsync(99), Times.Once);
+    }
 }

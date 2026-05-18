@@ -29,7 +29,7 @@ public class PaymentService : IPaymentService
         var reservationExists = await _repository.ReservationExistsAsync(dto.ReservationId);
 
         if (!reservationExists)
-            throw new NotFoundException("Reservation not found");
+            return null; 
 
         var payment = new Payment
         {
@@ -67,12 +67,23 @@ public class PaymentService : IPaymentService
 
     public async Task<IEnumerable<Payment>> GetSuccessfulPaymentsAsync()
     {
-        return await _repository.GetByStatusAsync("Paid");
+        var payments = await _repository.GetAllAsync();
+
+        return payments.Where(p =>
+            p.PaymentStatus == "Paid" ||
+            p.PaymentStatus == "Success" ||
+            p.PaymentStatus == "Successful");
     }
 
     public async Task<IEnumerable<Payment>> GetFailedPaymentsAsync()
     {
-        return await _repository.GetByStatusAsync("Pending");
+        var payments = await _repository.GetAllAsync();
+
+        return payments.Where(p =>
+            p.PaymentStatus == "Pending" ||
+            p.PaymentStatus == "Failed" ||
+            string.IsNullOrWhiteSpace(p.PaymentStatus) ||
+            p.PaymentStatus == "string");
     }
 
     public async Task<Payment?> UpdatePaymentStatusAsync(int id, PaymentStatusUpdateDto dto)
@@ -94,7 +105,9 @@ public class PaymentService : IPaymentService
         if (payment == null)
             return null;
 
-        if (payment.PaymentStatus != "Successful")
+        if (payment.PaymentStatus != "Paid" &&
+            payment.PaymentStatus != "Success" &&
+            payment.PaymentStatus != "Successful")
             return null;
 
         payment.PaymentStatus = "Refunded";

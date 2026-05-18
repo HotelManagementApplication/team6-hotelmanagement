@@ -4,4 +4,5 @@
   </Folder>
   <Project Path="HotelManagement.API/HotelManagement.API.csproj" />
   <Project Path="HotelManagement.Common/HotelManagement.Common.csproj" />
+  <Project Path="HotelManagement.Tests/HotelManagement.Tests.csproj" />
 </Solution>
