@@ -57,7 +57,7 @@ public class HotelControllerTests
 
         _mockHotelService.Verify(s => s.GetAllAsync(), Times.Once);
     }
-
+    
     /// <summary>
     /// POSITIVE TEST 2: GetById should return hotel when it exists
     /// </summary>
@@ -250,6 +250,7 @@ public class HotelControllerTests
 
         _mockCreateValidator.Verify(v => v.ValidateAsync(hotelDto, CancellationToken.None), Times.Once);
     }
+     
 
     #endregion
 }

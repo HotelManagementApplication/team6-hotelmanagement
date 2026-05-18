@@ -3,6 +3,8 @@ using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Services;
 using HotelManagement.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using HotelManagement.API.Exceptions;
+
 
 namespace HotelManagement.API.Modules.HotelModule.Controllers;
 
@@ -53,7 +55,7 @@ public class HotelController(
         return Ok(response);
     }
 
-    // POST /api/hotels
+   // POST /api/hotels
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] HotelDto dto)
     {
@@ -61,11 +63,22 @@ public class HotelController(
         if (!validation.IsValid)
             return UnprocessableEntity(ApiResponse<object>.Fail(422, "Validation failed.",
                 validation.Errors.Select(e => e.ErrorMessage).ToList()));
-
-        var created = await _service.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.HotelId },
-            ApiResponse<HotelResponseDto>.Ok(200, "Hotel created successfully.", created));
+        try
+        {
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.HotelId },
+                ApiResponse<HotelResponseDto>.Ok(200, "Hotel created successfully.", created));
+        }
+        catch (BadRequestException ex)
+        {
+            return BadRequest(ApiResponse<HotelResponseDto>.Fail(400, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<HotelResponseDto>.Fail(500, "An unexpected error occurred.", new List<string> { ex.Message }));
+        }
     }
+
 
     // PUT /api/hotels/{id}
     [HttpPut("{id:int}")]
@@ -75,9 +88,23 @@ public class HotelController(
         if (!validation.IsValid)
             return UnprocessableEntity(ApiResponse<object>.Fail(422, "Validation failed.",
                 validation.Errors.Select(e => e.ErrorMessage).ToList()));
-
-        var updated = await _service.UpdateAsync(id, dto);
-        return Ok(ApiResponse<HotelResponseDto>.Ok(200, "Hotel updated successfully.", updated));
+        try
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return Ok(ApiResponse<HotelResponseDto>.Ok(200, "Hotel updated successfully.", updated));
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ApiResponse<HotelResponseDto>.Fail(404, ex.Message));
+        }
+        catch (BadRequestException ex)
+        {
+            return BadRequest(ApiResponse<HotelResponseDto>.Fail(400, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<HotelResponseDto>.Fail(500, "An unexpected error occurred.", new List<string> { ex.Message }));
+        }
     }
 
     // DELETE /api/hotels/{id}
