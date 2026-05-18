@@ -2,10 +2,11 @@ using HotelManagement.API.Modules.ReviewModule.DTOs;
 using HotelManagement.Common.Models;
 using HotelManagement.API.Modules.ReviewModule.Repositories;
 using HotelManagement.API.Modules.ReviewModule.Validators;
+using FluentValidation;
 
 namespace HotelManagement.API.Modules.ReviewModule.Services;
 
-public class ReviewService(IReviewRepository reviewRepository) : IReviewService
+public class ReviewService(IReviewRepository reviewRepository, IValidator<ReviewCreateDto> createValidator, IValidator<ReviewUpdateDto> updateValidator) : IReviewService
 {
     public async Task<List<ReviewDto>> GetAllAsync() => (await reviewRepository.GetAllAsync()).Select(Map).ToList();
     public async Task<ReviewDto?> GetByIdAsync(int id) => (await reviewRepository.GetByIdAsync(id)) is { } r ? Map(r) : null;
@@ -17,7 +18,7 @@ public class ReviewService(IReviewRepository reviewRepository) : IReviewService
 
     public async Task<ReviewDto> CreateAsync(ReviewCreateDto dto)
     {
-        ReviewCreateDtoValidator.Validate(dto);
+        createValidator.ValidateAndThrow(dto);
         var review = await reviewRepository.AddAsync(new Review
         {
             ReservationId = dto.ReservationId,
@@ -30,7 +31,7 @@ public class ReviewService(IReviewRepository reviewRepository) : IReviewService
 
     public async Task<bool> UpdateAsync(int id, ReviewUpdateDto dto)
     {
-        ReviewUpdateDtoValidator.Validate(dto);
+        updateValidator.ValidateAndThrow(dto);
         var existing = await reviewRepository.GetByIdAsync(id);
         if (existing is null) return false;
         existing.Rating = dto.Rating;

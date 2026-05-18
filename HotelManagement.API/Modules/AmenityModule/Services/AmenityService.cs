@@ -2,10 +2,11 @@ using HotelManagement.API.Modules.AmenityModule.DTOs;
 using HotelManagement.Common.Models;
 using HotelManagement.API.Modules.AmenityModule.Repositories;
 using HotelManagement.API.Modules.AmenityModule.Validators;
+using FluentValidation;
 
 namespace HotelManagement.API.Modules.AmenityModule.Services;
 
-public class AmenityService(IAmenityRepository amenityRepository) : IAmenityService
+public class AmenityService(IAmenityRepository amenityRepository, IValidator<AmenityCreateDto> validator) : IAmenityService
 {
     public async Task<List<AmenityDto>> GetAllAsync() => (await amenityRepository.GetAllAsync()).Select(MapAmenity).ToList();
 
@@ -29,14 +30,14 @@ public class AmenityService(IAmenityRepository amenityRepository) : IAmenityServ
 
     public async Task<AmenityDto> CreateAsync(AmenityCreateDto dto)
     {
-        AmenityCreateDtoValidator.Validate(dto);
+        validator.ValidateAndThrow(dto);
         var amenity = await amenityRepository.AddAsync(new Amenity { Name = dto.Name, Description = dto.Description });
         return MapAmenity(amenity);
     }
 
     public async Task<bool> UpdateAsync(int id, AmenityCreateDto dto)
     {
-        AmenityCreateDtoValidator.Validate(dto);
+        validator.ValidateAndThrow(dto);
         var existing = await amenityRepository.GetByIdAsync(id);
         if (existing is null) return false;
         existing.Name = dto.Name;

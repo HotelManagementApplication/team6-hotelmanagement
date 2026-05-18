@@ -4,23 +4,18 @@ using FluentValidation;
 
 namespace HotelManagement.API.Modules.AmenityModule.Validators;
 
-public static class AmenityCreateDtoValidator
+public class AmenityCreateDtoValidator : AbstractValidator<AmenityCreateDto>
 {
-    public static void Validate(AmenityCreateDto dto)
+    public AmenityCreateDtoValidator()
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-        {
-            throw new ValidationException("Amenity name is required.");
-        }
+        RuleFor(amenity => amenity.Name)
+            .NotEmpty()
+            .WithMessage("Amenity name is required.")
+            .MaximumLength(100)
+            .WithMessage("Amenity name cannot exceed 100 characters.");
 
-        if (dto.Name.Length > 100)
-        {
-            throw new ValidationException("Amenity name cannot exceed 100 characters.");
-        }
-
-        if (dto.Description?.Length > 500)
-        {
-            throw new ValidationException("Amenity description cannot exceed 500 characters.");
-        }
+        RuleFor(amenity => amenity.Description)
+            .MaximumLength(500)
+            .WithMessage("Amenity description cannot exceed 500 characters.");
     }
 }

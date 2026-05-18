@@ -1,8 +1,8 @@
-using HotelManagement.API.Modules.RoomTypeModule.Controllers;
-using HotelManagement.API.Modules.RoomTypeModule.DTOs;
-using HotelManagement.API.Modules.RoomTypeModule.Services;
+using HotelManagement.API.Controllers;
 using HotelManagement.API.DTOs;
+using HotelManagement.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 
 namespace HotelManagement.Tests;
 
@@ -11,120 +11,128 @@ public class RoomTypeControllerTests
     [Fact]
     public async Task GetAll_ReturnsOkWithRoomTypes()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService
+        var roomTypes = new List<RoomTypeDto>
         {
-            RoomTypes = [new RoomTypeDto { RoomTypeId = 1, TypeName = "Deluxe", MaxOccupancy = 2, PricePerNight = 1500 }]
-        });
+            new() { RoomTypeId = 1, TypeName = "Deluxe", MaxOccupancy = 2, PricePerNight = 1500 }
+        };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.GetAllAsync()).ReturnsAsync(roomTypes);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
         var result = await controller.GetAll();
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var response = Assert.IsType<ApiResponse<object>>(ok.Value);
         Assert.True(response.Success);
+        Assert.Same(roomTypes, response.Data);
+        roomTypeService.Verify(service => service.GetAllAsync(), Times.Once);
     }
 
     [Fact]
     public async Task GetById_WhenRoomTypeExists_ReturnsOk()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService
-        {
-            RoomType = new RoomTypeDto { RoomTypeId = 1, TypeName = "Suite" }
-        });
+        var roomType = new RoomTypeDto { RoomTypeId = 1, TypeName = "Suite" };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.GetByIdAsync(1)).ReturnsAsync(roomType);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
         var result = await controller.GetById(1);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var response = Assert.IsType<ApiResponse<object>>(ok.Value);
         Assert.Equal("Room type fetched.", response.Message);
+        Assert.Same(roomType, response.Data);
+        roomTypeService.Verify(service => service.GetByIdAsync(1), Times.Once);
     }
 
     [Fact]
     public async Task Create_ReturnsCreatedAtAction()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService
-        {
-            CreatedRoomType = new RoomTypeDto { RoomTypeId = 3, TypeName = "Family" }
-        });
+        var dto = new RoomTypeCreateDto { TypeName = "Family", MaxOccupancy = 4, PricePerNight = 3000 };
+        var createdRoomType = new RoomTypeDto { RoomTypeId = 3, TypeName = "Family" };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.CreateAsync(dto)).ReturnsAsync(createdRoomType);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
-        var result = await controller.Create(new RoomTypeCreateDto { TypeName = "Family", MaxOccupancy = 4, PricePerNight = 3000 });
+        var result = await controller.Create(dto);
 
         var created = Assert.IsType<CreatedAtActionResult>(result);
+        var response = Assert.IsType<ApiResponse<object>>(created.Value);
         Assert.Equal(nameof(RoomTypeController.GetById), created.ActionName);
+        Assert.Equal(createdRoomType.RoomTypeId, created.RouteValues?["id"]);
+        Assert.Same(createdRoomType, response.Data);
+        roomTypeService.Verify(service => service.CreateAsync(dto), Times.Once);
     }
 
     [Fact]
     public async Task UpdatePrice_WhenRoomTypeExists_ReturnsOk()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService { UpdatePriceResult = true });
+        var dto = new RoomTypePriceUpdateDto { PricePerNight = 2500 };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.UpdatePriceAsync(1, dto)).ReturnsAsync(true);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
-        var result = await controller.UpdatePrice(1, new RoomTypePriceUpdateDto { PricePerNight = 2500 });
+        var result = await controller.UpdatePrice(1, dto);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var response = Assert.IsType<ApiResponse<object>>(ok.Value);
         Assert.Equal("Price updated.", response.Message);
+        roomTypeService.Verify(service => service.UpdatePriceAsync(1, dto), Times.Once);
     }
 
     [Fact]
     public async Task GetById_WhenRoomTypeMissing_ReturnsNotFound()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService());
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.GetByIdAsync(404)).ReturnsAsync((RoomTypeDto?)null);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
         var result = await controller.GetById(404);
 
         var notFound = Assert.IsType<NotFoundObjectResult>(result);
         var response = Assert.IsType<ApiResponse<object>>(notFound.Value);
         Assert.False(response.Success);
+        roomTypeService.Verify(service => service.GetByIdAsync(404), Times.Once);
     }
 
     [Fact]
     public async Task Update_WhenRoomTypeMissing_ReturnsNotFound()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService { UpdateResult = false });
+        var dto = new RoomTypeUpdateDto { TypeName = "Suite" };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.UpdateAsync(404, dto)).ReturnsAsync(false);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
-        var result = await controller.Update(404, new RoomTypeUpdateDto { TypeName = "Suite" });
+        var result = await controller.Update(404, dto);
 
         Assert.IsType<NotFoundObjectResult>(result);
+        roomTypeService.Verify(service => service.UpdateAsync(404, dto), Times.Once);
     }
 
     [Fact]
     public async Task Delete_WhenRoomTypeMissing_ReturnsNotFound()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService { DeleteResult = false });
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.DeleteAsync(404)).ReturnsAsync(false);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
         var result = await controller.Delete(404);
 
         Assert.IsType<NotFoundObjectResult>(result);
+        roomTypeService.Verify(service => service.DeleteAsync(404), Times.Once);
     }
 
     [Fact]
     public async Task UpdatePrice_WhenRoomTypeMissing_ReturnsNotFound()
     {
-        var controller = new RoomTypeController(new FakeRoomTypeService { UpdatePriceResult = false });
+        var dto = new RoomTypePriceUpdateDto { PricePerNight = 2500 };
+        var roomTypeService = new Mock<IRoomTypeService>();
+        roomTypeService.Setup(service => service.UpdatePriceAsync(404, dto)).ReturnsAsync(false);
+        var controller = new RoomTypeController(roomTypeService.Object);
 
-        var result = await controller.UpdatePrice(404, new RoomTypePriceUpdateDto { PricePerNight = 2500 });
+        var result = await controller.UpdatePrice(404, dto);
 
         Assert.IsType<NotFoundObjectResult>(result);
-    }
-
-    private sealed class FakeRoomTypeService : IRoomTypeService
-    {
-        public List<RoomTypeDto> RoomTypes { get; set; } = [];
-        public RoomTypeDto? RoomType { get; set; }
-        public RoomTypeDto? CreatedRoomType { get; set; }
-        public bool UpdateResult { get; set; }
-        public bool UpdatePriceResult { get; set; }
-        public bool DeleteResult { get; set; }
-
-        public Task<List<RoomTypeDto>> GetAllAsync() => Task.FromResult(RoomTypes);
-        public Task<RoomTypeDto?> GetByIdAsync(int id) => Task.FromResult(RoomType);
-        public Task<List<RoomDto>> GetRoomsByTypeIdAsync(int id) => Task.FromResult(new List<RoomDto>());
-        public Task<List<RoomTypeDto>> GetByCapacityAsync(int capacity) => Task.FromResult(RoomTypes);
-        public Task<List<RoomTypeDto>> GetByPriceRangeAsync(decimal min, decimal max) => Task.FromResult(RoomTypes);
-        public Task<List<RoomTypeDto>> GetAvailableRoomTypesAsync() => Task.FromResult(RoomTypes);
-        public Task<RoomTypeDto?> GetRoomTypeDetailsByIdAsync(int id) => Task.FromResult(RoomType);
-        public Task<RoomTypeDto> CreateAsync(RoomTypeCreateDto dto) => Task.FromResult(CreatedRoomType ?? new RoomTypeDto { RoomTypeId = 1, TypeName = dto.TypeName });
-        public Task<bool> UpdateAsync(int id, RoomTypeUpdateDto dto) => Task.FromResult(UpdateResult);
-        public Task<bool> UpdatePriceAsync(int id, RoomTypePriceUpdateDto dto) => Task.FromResult(UpdatePriceResult);
-        public Task<bool> DeleteAsync(int id) => Task.FromResult(DeleteResult);
+        roomTypeService.Verify(service => service.UpdatePriceAsync(404, dto), Times.Once);
     }
 }
