@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using HotelManagement.API.DTOs;
+using HotelManagement.API.Filters;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Services;
+using HotelManagement.API.Modules.ReservationModule.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

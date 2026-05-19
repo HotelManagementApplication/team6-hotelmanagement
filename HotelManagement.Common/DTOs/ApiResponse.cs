@@ -1,5 +1,3 @@
-using Microsoft.IdentityModel.Tokens;
-
 namespace HotelManagement.Common.DTOs;
 
 public class ApiResponse<T>
@@ -11,7 +9,7 @@ public class ApiResponse<T>
     public List<string>? Errors { get; set; } = null;
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-    public static ApiResponse<T> Ok(int statusCode,string? message, T? data) =>
+    public static ApiResponse<T> Ok(int statusCode, string? message, T? data) =>
         new() { Success = true, StatusCode = statusCode, Message = message, Data = data }; 
     
     public static ApiResponse<T> Fail(int statusCode, string? message, List<string>? errors = null) =>

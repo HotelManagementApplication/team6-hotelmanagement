@@ -11,7 +11,6 @@ namespace HotelManagement.API.Modules.RoomModule.Controllers;
 public class RoomController(IRoomService roomService) : ControllerBase
 {
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll() =>
         Ok(new ApiResponse<object> { Success = true, Message = "Rooms fetched.", Data = await roomService.GetAllAsync() });
 
@@ -49,7 +48,6 @@ public class RoomController(IRoomService roomService) : ControllerBase
             : NotFound(new ApiResponse<object> { Success = false, Message = "Room not found." });
 
     [HttpGet("available")]
-    [Authorize]
     public async Task<IActionResult> GetAvailable() =>
         Ok(new ApiResponse<object> { Success = true, Message = "Available rooms fetched.", Data = await roomService.GetAvailableRoomsAsync() });
 

@@ -1,6 +1,8 @@
 using FluentValidation;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Services;
+using HotelManagement.API.Modules.RoomModule.DTOs;
 using HotelManagement.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using HotelManagement.API.Exceptions;
@@ -134,12 +136,20 @@ public class HotelController(
         return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(200, "Success", rooms));
     }
 
+    // GET /api/hotels/{id}/rooms
+    [HttpGet("{id:int}/amenities")]
+    public async Task<IActionResult> GetAmenities(int id)
+    {
+        var amenities = await _service.GetAmenitiesAsync(id);
+        return Ok(ApiResponse<IEnumerable<AmenityDto>>.Ok(200, "Success", amenities));
+    }
+
     // GET /api/hotels/{id}/available-rooms
     [HttpGet("{id:int}/available-rooms")]
     public async Task<IActionResult> GetAvailableRooms(int id)
     {
-        var rooms = await _service.GetAvailableRoomsAsync(id);
-        return Ok(ApiResponse<IEnumerable<RoomBriefDto>>.Ok(200, "Success", rooms));
+        var rooms = await _service.GetAvailableRoomsWithPriceAsync(id);
+        return Ok(ApiResponse<IEnumerable<RoomWithPriceDto>>.Ok(200, "Success", rooms));
     }
 
     // GET /api/hotels/{id}/reservations

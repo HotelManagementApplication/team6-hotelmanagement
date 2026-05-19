@@ -3,6 +3,8 @@ using HotelManagement.API.Modules.HotelModule.DTOs;
 using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.AmenityModule.Repositories;
 using HotelManagement.Common.Models;
+using HotelManagement.API.Modules.RoomModule.DTOs;
+using HotelManagement.API.Modules.AmenityModule.DTOs;
 
 namespace HotelManagement.API.Modules.HotelModule.Services;
 
@@ -134,4 +136,31 @@ public class HotelService : IHotelService
         RoomTypeName = r.RoomType?.TypeName,
         PricePerNight = r.RoomType?.PricePerNight
     };
+
+    public async Task<IEnumerable<RoomWithPriceDto>> GetAvailableRoomsWithPriceAsync(int hotelId)
+    {
+        var rooms = await _hotelRepo.GetAvailableRoomsByHotelIdAsync(hotelId) ??
+            throw new NotFoundException();
+
+        return rooms.Select(r => new RoomWithPriceDto
+        {
+            RoomId = r.RoomId,
+            RoomType = r.RoomType!.TypeName ?? "",
+            Price = r.RoomType!.PricePerNight ?? 0m,
+            MaxOccupancy = r.RoomType!.MaxOccupancy ?? 0
+        });
+    }
+
+    public async Task<IEnumerable<AmenityDto>> GetAmenitiesAsync(int hotelId)
+    {
+        var amenities = await _hotelRepo.GetAmenitiesByHotelIdAsync(hotelId) ??
+            throw new NotFoundException();
+
+        return amenities.Select(a => new AmenityDto
+        {
+            AmenityId = a.AmenityId,
+            Name = a.Name ?? "",
+            Description = a.Description!
+        });
+    }
 }

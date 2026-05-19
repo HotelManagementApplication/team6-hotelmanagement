@@ -11,7 +11,6 @@ namespace HotelManagement.API.Modules.AmenityModule.Controllers;
 public class AmenityController(IAmenityService amenityService) : ControllerBase
 {
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll() =>
         Ok(new ApiResponse<object> { Success = true, Message = "Amenities fetched.", Data = await amenityService.GetAllAsync() });
 

@@ -11,6 +11,7 @@ public interface IHotelRepository
     Task DeleteAsync(Hotel hotel);
     Task<IEnumerable<Hotel>> SearchByLocationAsync(string location);
     Task<IEnumerable<Room>> GetRoomsByHotelIdAsync(int hotelId);
+    Task<IEnumerable<Amenity>> GetAmenitiesByHotelIdAsync(int hotelId);
     Task<IEnumerable<Room>> GetAvailableRoomsByHotelIdAsync(int hotelId);
     Task<IEnumerable<Reservation>> GetReservationsByHotelIdAsync(int hotelId);
 }

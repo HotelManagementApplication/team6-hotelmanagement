@@ -5,13 +5,14 @@ namespace HotelManagement.API.Modules.AuthModule.Validators;
 
 public class LoginRequestValidator : AbstractValidator<LoginRequestDto>
 {
-    public  LoginRequestValidator()
+    public LoginRequestValidator()
     {
         RuleFor(user => user.Email)
             .NotEmpty()
             .WithMessage("Email should not be empty.")
             .EmailAddress()
-            .WithMessage("Invalid email address.");
+            .Matches(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+            .WithMessage("Invalid meail address");
 
         RuleFor(user => user.Password)
             .NotEmpty()

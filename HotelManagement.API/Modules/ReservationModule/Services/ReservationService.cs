@@ -1,4 +1,5 @@
 using AutoMapper;
+using HotelManagement.API.Modules.PaymentModule.DTOs;
 using HotelManagement.API.Modules.PaymentModule.Services;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Exceptions;
@@ -42,7 +43,21 @@ public class ReservationService(
             throw new InvalidOperationException($"User with email '{reservationDto.GuestEmail}' does not exist.");
 
         reservation.ApplicationUsers = new List<ApplicationUser> { user };
-        await _reservationRepository.CreateReservationAsync(reservation);
+
+        var room = await _roomService.GetRoomDetailsByIdAsync(reservationDto.RoomId)
+            ?? throw new ReservationNotFoundException(reservation.ReservationId);
+        var roomType = await _roomTypeService.GetRoomTypeDetailsByIdAsync(room.RoomTypeId ?? 0)
+            ?? throw new ReservationNotFoundException(reservation.ReservationId);
+        
+        var createdReservation = await _reservationRepository.CreateReservationAsync(reservation);
+        var paymentDetails = new PaymentCreateDto
+        {
+            ReservationId = createdReservation.ReservationId,
+            Amount = roomType.PricePerNight ?? 0m,
+            PaymentStatus = "Success"
+        };
+
+        await _paymentService.CreatePaymentAsync(paymentDetails);
         return await ToReservationDetailsDto(reservation);
     }
 

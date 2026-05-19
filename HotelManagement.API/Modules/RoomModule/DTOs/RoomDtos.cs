@@ -13,6 +13,14 @@ public class RoomDto
     public bool? IsAvailable { get; set; }
 }
 
+public class RoomWithPriceDto
+{
+    public int RoomId { get; set; }
+    public string RoomType { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int MaxOccupancy { get; set; }
+}
+
 public class RoomCreateDto
 {
     [Required]

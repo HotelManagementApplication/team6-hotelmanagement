@@ -11,6 +11,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequestDto>
             .NotEmpty()
             .WithMessage("Email should not be empty.")
             .EmailAddress()
+            .Matches(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
             .WithMessage("Invalid email address.");
         
         RuleFor(user => user.Password)

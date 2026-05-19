@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using AspNetCore.SwaggerUI.Themes;
 using FluentValidation;
 using HotelManagement.API.Filters;
 using HotelManagement.API.Middlewares;
@@ -11,8 +12,10 @@ using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.Services;
 using HotelManagement.API.Modules.PaymentModule.Repositories;
 using HotelManagement.API.Modules.PaymentModule.Services;
+using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
 using HotelManagement.API.Modules.ReservationModule.Services;
+using HotelManagement.API.Modules.ReservationModule.Validators;
 using HotelManagement.API.Modules.ReviewModule.Repositories;
 using HotelManagement.API.Modules.ReviewModule.Services;
 using HotelManagement.API.Modules.RoomModule.Repositories;
@@ -29,7 +32,9 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<HotelDbContext>();
+builder.Services.AddDbContext<HotelDbContext>(options => 
+    options.UseLazyLoadingProxies());
+    
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<HotelDbContext>()
     .AddDefaultTokenProviders();
@@ -65,6 +70,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped(typeof(ValidationFilters<>));
 builder.Services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateReservationValidator>();
 
 // ============ Services =============
 builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
@@ -124,7 +130,7 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(Style.Dark);
 }
 
 app.UseHttpsRedirection();
