@@ -12,7 +12,6 @@ using HotelManagement.API.Modules.HotelModule.Repositories;
 using HotelManagement.API.Modules.HotelModule.Services;
 using HotelManagement.API.Modules.PaymentModule.Repositories;
 using HotelManagement.API.Modules.PaymentModule.Services;
-using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Repositories;
 using HotelManagement.API.Modules.ReservationModule.Services;
 using HotelManagement.API.Modules.ReservationModule.Validators;
@@ -139,19 +138,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var  scope = app.Services.CreateScope())
+{
+   var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
+   db.Database.Migrate();
+
+   var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+   string[] roleNames = [ "Admin", "User" ];
+
+   foreach (var roleName in roleNames)
+       if (!await roleManager.RoleExistsAsync(roleName))
+           await roleManager.CreateAsync(new IdentityRole(roleName));
+}
+
 app.Run();
-
-//using (var  scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<HotelDbContext>();
-//    db.Database.Migrate();
-
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-//    string[] roleNames = [ "Admin", "User" ];
-
-//    foreach (var roleName in roleNames)
-//        if (!await roleManager.RoleExistsAsync(roleName))
-//            await roleManager.CreateAsync(new IdentityRole(roleName));
-//}
-
-

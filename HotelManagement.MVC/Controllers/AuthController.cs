@@ -97,7 +97,7 @@ public class AuthController(ApiService apiService) : Controller
                 Email = model.Email,
                 Password = model.Password
             };
-            return View(nameof(Login), loginModel);
+            return RedirectToAction(nameof(Login));
         }
         catch (NullReferenceException)
         {
