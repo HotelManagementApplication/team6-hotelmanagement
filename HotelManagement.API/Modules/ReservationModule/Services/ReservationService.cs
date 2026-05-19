@@ -48,6 +48,15 @@ public class ReservationService(
             ?? throw new ReservationNotFoundException(reservation.ReservationId);
         var roomType = await _roomTypeService.GetRoomTypeDetailsByIdAsync(room.RoomTypeId ?? 0)
             ?? throw new ReservationNotFoundException(reservation.ReservationId);
+
+        var availableRooms = await _roomService.GetAllAsync();
+        availableRooms = availableRooms
+            .Where(r => r.IsAvailable == true && r.RoomTypeName == roomType.TypeName)
+            .ToList();
+
+        foreach (var item in availableRooms)
+            if (!await HasReservationDateConflictAsync(item.RoomId, reservationDto.CheckInDate, reservationDto.CheckOutDate))
+                reservation.RoomId = item.RoomId;
         
         var createdReservation = await _reservationRepository.CreateReservationAsync(reservation);
         var paymentDetails = new PaymentCreateDto
@@ -114,6 +123,19 @@ public class ReservationService(
             result.Add(data);
         }
 
+        return result;
+    }
+
+    public async Task<IEnumerable<ReservationDetailsDto>?> GetAllAsync()
+    {
+        var reservations = await _reservationRepository.GetAllAsync() ?? [];
+        var result = new List<ReservationDetailsDto>();
+
+        foreach (var reservation in reservations)
+        {
+            var data = await ToReservationDetailsDto(reservation);
+            result.Add(data);
+        }
         return result;
     }
 }

@@ -35,11 +35,17 @@ public class AuthController(ApiService apiService) : Controller
             if (response is null)
                 throw new NullReferenceException();
 
+            var token = response.Data!["token"];
+            var role = response.Data!["role"];
+
+            System.Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
+            System.Console.WriteLine(role);
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Email),
                 new Claim(ClaimTypes.Email, model.Email),
-                new Claim(ClaimTypes.Role, "User")
+                new Claim(ClaimTypes.Role, role!)
             };
 
             var claimsIdentity = new ClaimsIdentity(
@@ -52,7 +58,8 @@ public class AuthController(ApiService apiService) : Controller
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            HttpContext.Session.SetString("JwtToken", response.Data!["token"]);
+            HttpContext.Session.SetString("JwtToken", token);
+            Response.Cookies.Append("JwtToken", token);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
@@ -113,6 +120,11 @@ public class AuthController(ApiService apiService) : Controller
         {
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
+
+            HttpContext.Session.Clear();
+            foreach (var cookie in Request.Cookies.Keys)
+                Response.Cookies.Delete(cookie);
+
             return RedirectToAction("Index", "Hotels");    
         }
         catch (Exception ex)

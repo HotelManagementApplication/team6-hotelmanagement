@@ -29,6 +29,7 @@ public class AuthController(UserManager<ApplicationUser> userManager, IAuthToken
                 return Unauthorized("Invalid password.");
             
             var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
             var token = _tokenService.GetToken(user, roles);
 
             var response = new ApiResponse<object>
@@ -36,7 +37,7 @@ public class AuthController(UserManager<ApplicationUser> userManager, IAuthToken
                 Success = true,
                 StatusCode = 200,
                 Message = "User successfully logged in.",
-                Data = new { token },
+                Data = new { token, role },
                 Errors = null,
                 Timestamp = DateTime.UtcNow
             };

@@ -74,3 +74,20 @@ body {
   border-color: #dee2e6 !important;
   outline: none !important;
 }
+
+.nav-pills .nav-link {
+    color: #000;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #212529 !important;
+    color: #fff !important;
+    border-color: #212529;
+}

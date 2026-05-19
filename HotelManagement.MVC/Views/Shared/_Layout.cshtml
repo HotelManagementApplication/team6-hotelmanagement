@@ -118,21 +118,11 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="/Admin">
+                                <a asp-controller="Admin" asp-action="Index" class="nav-link">
                                     Admin
                                 </a>
                             </li>
                         }
-
-                        @if (User.IsInRole("Staff") || User.IsInRole("Receptionist"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="/Staff">
-                                    Staff
-                                </a>
-                            </li>
-                        }
-
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated) 
                         {

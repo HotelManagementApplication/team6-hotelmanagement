@@ -1,9 +1,8 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using HotelManagement.API.DTOs;
-using HotelManagement.API.Filters;
 using HotelManagement.API.Modules.ReservationModule.DTOs;
 using HotelManagement.API.Modules.ReservationModule.Services;
-using HotelManagement.API.Modules.ReservationModule.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -84,6 +83,28 @@ public class ReservationController(IReservationService reservationService) : Con
         catch (Exception ex)
         {
             throw new Exception("Internal server error occured while making reservation.", ex);
+        }
+    }
+
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            var reservatons = await _reservationService.GetAllAsync();
+            var response = new ApiResponse<IEnumerable<ReservationDetailsDto>>
+            {
+                Success = true,
+                StatusCode = StatusCodes.Status201Created,
+                Message = "Successfully created reservation.",
+                Data = reservatons,
+                Errors = null,
+                Timestamp = DateTime.UtcNow
+            };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Internal server error occured while fetching reservation detals.", ex);
         }
     }
 }

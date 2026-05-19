@@ -29,4 +29,7 @@ public class ReservationRepository(HotelDbContext dbContext) : IReservationRepos
         await _dbContext.Reservations
             .Where(r => r.ApplicationUsers.Any(u => u.Id == userId))
             .ToListAsync();
+
+    public async Task<IEnumerable<Reservation>?> GetAllAsync() =>
+        await _dbContext.Reservations.ToListAsync();
 }

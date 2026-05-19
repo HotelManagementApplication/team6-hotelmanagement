@@ -10,4 +10,5 @@ public class CreateReservationDto
     public DateOnly CheckOutDate { get; set; }
 
     public int RoomId { get; set; }
+    public int HotelId { get; set; }
 }

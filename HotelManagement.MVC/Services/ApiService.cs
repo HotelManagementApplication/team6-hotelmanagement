@@ -18,6 +18,11 @@ public class ApiService(IHttpClientFactory httpClientFactory, IHttpContextAccess
         var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
         if (!string.IsNullOrEmpty(token))
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        else
+        {
+            token = _httpContextAccessor.HttpContext?.Request.Cookies["JwtToken"];
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
         return client;
     }
 

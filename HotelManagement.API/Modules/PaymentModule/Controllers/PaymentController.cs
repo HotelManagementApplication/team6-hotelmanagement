@@ -18,12 +18,18 @@ public class PaymentController(IPaymentService service) : ControllerBase
     {
         var payments = await _service.GetAllPaymentsAsync();
 
-        return Ok(new ApiResponse<IEnumerable<Payment>>
+        return Ok(new ApiResponse<IEnumerable<object>>
         {
             Success = true,
             StatusCode = StatusCodes.Status200OK,
             Message = "Payments fetched successfully.",
-            Data = payments
+            Data = payments.Select(p => new
+            {
+                p.ReservationId,
+                p.Amount,
+                p.PaymentStatus,
+                p.PaymentDate
+            })
         });
     }
 

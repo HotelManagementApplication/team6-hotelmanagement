@@ -29,6 +29,9 @@ public class ReservationController(ApiService apiService) : Controller
     public IActionResult Confirm()
     {
         var data = TempData["ReservationDetails"] as string;
+        if (data is null)
+            return RedirectToAction(nameof(Create));
+            
         var reservationDetails = JsonSerializer.Deserialize<ReservationViewModel>(data!);
         return View(reservationDetails);
     }
