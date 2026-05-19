@@ -28,9 +28,6 @@ public class HotelControllerTests
 
     #region POSITIVE TEST CASES
 
-    /// <summary>
-    /// POSITIVE TEST 1: GetAll should return all hotels successfully
-    /// </summary>
     [Fact]
     public async Task GetAll_ShouldReturnAllHotels_WhenSuccess()
     {
@@ -58,9 +55,6 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.GetAllAsync(), Times.Once);
     }
     
-    /// <summary>
-    /// POSITIVE TEST 2: GetById should return hotel when it exists
-    /// </summary>
     [Fact]
     public async Task GetById_ShouldReturnHotel_WhenHotelExists()
     {
@@ -85,9 +79,6 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.GetByIdAsync(hotelId), Times.Once);
     }
 
-    /// <summary>
-    /// POSITIVE TEST 3: Create should return created hotel when valid data provided
-    /// </summary>
     [Fact]
     public async Task Create_ShouldReturnCreatedHotel_WhenValidDataProvided()
     {
@@ -117,9 +108,6 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.CreateAsync(hotelDto), Times.Once);
     }
 
-    /// <summary>
-    /// POSITIVE TEST 4: Delete should return success when hotel exists
-    /// </summary>
     [Fact]
     public async Task Delete_ShouldReturnSuccess_WhenHotelExists()
     {
@@ -145,9 +133,6 @@ public class HotelControllerTests
 
     #region NEGATIVE TEST CASES
 
-    /// <summary>
-    /// NEGATIVE TEST 1: GetById should throw NotFoundException when hotel does not exist
-    /// </summary>
     [Fact]
     public async Task GetById_ShouldThrowNotFoundException_WhenHotelDoesNotExist()
     {
@@ -164,9 +149,6 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.GetByIdAsync(hotelId), Times.Once);
     }
 
-    /// <summary>
-    /// NEGATIVE TEST 2: Create should return UnprocessableEntity when validation fails
-    /// </summary>
     [Fact]
     public async Task Create_ShouldReturnUnprocessableEntity_WhenValidationFails()
     {
@@ -199,9 +181,7 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.CreateAsync(It.IsAny<HotelDto>()), Times.Never);
     }
 
-    /// <summary>
-    /// NEGATIVE TEST 3: Delete should throw NotFoundException when hotel does not exist
-    /// </summary>
+  
     [Fact]
     public async Task Delete_ShouldThrowNotFoundException_WhenHotelDoesNotExist()
     {
@@ -218,9 +198,6 @@ public class HotelControllerTests
         _mockHotelService.Verify(s => s.DeleteAsync(hotelId), Times.Once);
     }
 
-    /// <summary>
-    /// NEGATIVE TEST 4: Create should return UnprocessableEntity when required fields are missing
-    /// </summary>
     [Fact]
     public async Task Create_ShouldReturnUnprocessableEntity_WhenRequiredFieldsMissing()
     {
