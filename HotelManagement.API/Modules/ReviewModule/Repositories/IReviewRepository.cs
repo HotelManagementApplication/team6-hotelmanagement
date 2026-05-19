@@ -14,4 +14,5 @@ public interface IReviewRepository
     Task<Review> AddAsync(Review review);
     Task UpdateAsync(Review review);
     Task DeleteAsync(Review review);
+    Task<List<Review>> GetAllWithGuestDetailsAsync();
 }

@@ -14,4 +14,5 @@ public interface IReviewService
     Task<ReviewDto> CreateAsync(ReviewCreateDto dto);
     Task<bool> UpdateAsync(int id, ReviewUpdateDto dto);
     Task<bool> DeleteAsync(int id);
+    Task<List<ReviewDetailsDto>> GetAllWithGuestDetailsAsync();
 }

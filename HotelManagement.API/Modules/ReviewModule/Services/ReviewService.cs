@@ -1,7 +1,6 @@
 using HotelManagement.API.Modules.ReviewModule.DTOs;
 using HotelManagement.Common.Models;
 using HotelManagement.API.Modules.ReviewModule.Repositories;
-using HotelManagement.API.Modules.ReviewModule.Validators;
 using FluentValidation;
 
 namespace HotelManagement.API.Modules.ReviewModule.Services;
@@ -57,4 +56,21 @@ public class ReviewService(IReviewRepository reviewRepository, IValidator<Review
         ReviewDate = r.ReviewDate,
         CreatedAt = r.ReviewDate?.ToDateTime(TimeOnly.MinValue)
     };
+
+    public async Task<List<ReviewDetailsDto>> GetAllWithGuestDetailsAsync()
+    {
+        var reviews = await reviewRepository.GetAllWithGuestDetailsAsync();
+        var response = reviews.Select(r => new ReviewDetailsDto
+        {
+           Rating = r.Rating ?? 0,
+           Comment = r.Comment,
+           ReviewDate = r.ReviewDate,
+           CreatedAt = r.ReviewDate?.ToDateTime(TimeOnly.MinValue),
+           GuestName = r.Reservation?.GuestName ?? "",
+           GuestEmail = r.Reservation?.GuestEmail ?? "",
+           GuestPhoneNumber = r.Reservation?.GuestPhone ?? "",
+           RoomType = r.Reservation?.Room?.RoomType?.TypeName ?? ""
+        });
+        return response.ToList();
+    }
 }

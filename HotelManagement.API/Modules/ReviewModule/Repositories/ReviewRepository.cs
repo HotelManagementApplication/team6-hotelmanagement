@@ -46,4 +46,8 @@ public class ReviewRepository(HotelDbContext context) : IReviewRepository
         context.Reviews.Remove(review);
         await context.SaveChangesAsync();
     }
+
+    public async Task<List<Review>> GetAllWithGuestDetailsAsync() =>
+        await context.Reviews.OrderByDescending(x => x.ReviewDate)
+            .ToListAsync();
 }

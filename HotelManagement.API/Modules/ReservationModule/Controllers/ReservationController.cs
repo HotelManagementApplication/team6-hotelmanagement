@@ -86,6 +86,7 @@ public class ReservationController(IReservationService reservationService) : Con
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         try

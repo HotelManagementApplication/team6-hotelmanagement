@@ -72,4 +72,8 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     [Authorize]
     public async Task<IActionResult> TopRated() =>
         Ok(new ApiResponse<object> { Success = true, Message = "Top-rated reviews fetched.", Data = await reviewService.GetTopRatedAsync() });
+    
+    [HttpGet("with-guest")]
+    public async Task<IActionResult> WithGuest() =>
+        Ok(new ApiResponse<object> { Success = true, Message = "Successfully fetched reviews.", Data = await reviewService.GetAllWithGuestDetailsAsync() });
 }

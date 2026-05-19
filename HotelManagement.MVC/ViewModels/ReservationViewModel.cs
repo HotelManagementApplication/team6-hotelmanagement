@@ -59,7 +59,6 @@ public class ReservationViewModel : IValidatableObject
 }
 public class BookingViewModel
 {
-    // ignore reservation id, room type id, hotel id, price per night
     public int ReservationId { get; set; }
     public string GuestName { get; set; } = string.Empty;
     public string GuestEmail { get; set; } = string.Empty;

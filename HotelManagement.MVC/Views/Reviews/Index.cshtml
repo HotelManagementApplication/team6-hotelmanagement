@@ -1,0 +1,205 @@
+
+@model IEnumerable<ReviewDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+
+        <div>
+
+            <h1 class="fw-bold mb-1">
+                Guest Reviews
+            </h1>
+
+            <p class="text-muted mb-0">
+                Read what guests are saying about their stays.
+            </p>
+
+        </div>
+
+        <!-- Filter -->
+        <div style="min-width: 250px;">
+
+            <div class="input-group">
+
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input type="text"
+                       id="roomTypeFilter"
+                       class="form-control border-start-0"
+                       placeholder="Filter by room type..." />
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Reviews -->
+    <div class="row g-4"
+         id="reviewsContainer">
+
+        @foreach (var review in Model)
+        {
+            <div class="col-lg-6 review-card"
+                 data-roomtype="@review.RoomType.ToLower()">
+
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                    <div class="card-body p-4">
+
+                        <!-- Top -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+
+                            <div>
+
+                                <h5 class="fw-semibold mb-1">
+                                    @review.GuestName
+                                </h5>
+
+                                <p class="text-muted small mb-0">
+                                    @review.GuestEmail
+                                </p>
+
+                            </div>
+
+                            <span class="badge bg-dark rounded-pill px-3 py-2">
+                                ⭐ @review.Rating
+                            </span>
+
+                        </div>
+
+                        <!-- Room Type -->
+                        <div class="mb-3">
+
+                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+
+                                <i class="bi bi-door-open me-1"></i>
+
+                                @review.RoomType
+
+                            </span>
+
+                        </div>
+
+                        <!-- Comment -->
+                        <p class="text-muted mb-4"
+                           style="line-height: 1.7;">
+
+                            @(string.IsNullOrWhiteSpace(review.Comment)
+                                ? "No comment provided."
+                                : review.Comment)
+
+                        </p>
+
+                        <!-- Footer -->
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <small class="text-muted">
+
+                                <i class="bi bi-telephone me-1"></i>
+
+                                @review.GuestPhoneNumber
+
+                            </small>
+
+                            <small class="text-muted">
+
+                                @(review.ReviewDate?.ToString("dd MMM yyyy"))
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <!-- Empty State -->
+    <div id="noResults"
+         class="text-center py-5 d-none">
+
+        <div class="mb-3">
+            <i class="bi bi-search fs-1 text-muted"></i>
+        </div>
+
+        <h5 class="fw-semibold">
+            No reviews found
+        </h5>
+
+        <p class="text-muted mb-0">
+            Try searching with another room type.
+        </p>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        const filterInput =
+            document.getElementById("roomTypeFilter");
+
+        const reviewCards =
+            document.querySelectorAll(".review-card");
+
+        const noResults =
+            document.getElementById("noResults");
+
+        filterInput.addEventListener("keyup", function () {
+
+            const value =
+                this.value.toLowerCase().trim();
+
+            let visibleCount = 0;
+
+            reviewCards.forEach(card => {
+
+                const roomType =
+                    card.dataset.roomtype;
+
+                const matches =
+                    roomType.includes(value);
+
+                if (matches) {
+
+                    card.style.display = "block";
+                    visibleCount++;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+            if (visibleCount === 0) {
+
+                noResults.classList.remove("d-none");
+
+            } else {
+
+                noResults.classList.add("d-none");
+
+            }
+
+        });
+
+    </script>
+
+}
