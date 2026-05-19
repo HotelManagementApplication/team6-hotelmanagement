@@ -1,0 +1,217 @@
+
+@model HotelManagement.MVC.ViewModels.ReservationViewModel
+
+<div class="container py-5">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a asp-action="Create"
+           class="btn btn-light border rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+        <!-- Left Content -->
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <!-- Header -->
+                    <div class="mb-5">
+
+                        <span class="badge bg-dark rounded-pill px-3 py-2 mb-3">
+                            Final Step
+                        </span>
+
+                        <h1 class="fw-bold mb-2">
+                            Review Your Reservation
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Please verify your booking information before payment.
+                        </p>
+
+                    </div>
+
+                    <!-- Payment Error -->
+                    @if (TempData["PaymentError"] != null)
+                    {
+                        <div class="alert alert-danger border-0 rounded-4 mb-4">
+
+                            <div class="d-flex align-items-center">
+
+                                <i class="bi bi-exclamation-circle-fill me-3 fs-4"></i>
+
+                                <div>
+                                    <div class="fw-semibold">
+                                        Payment Failed
+                                    </div>
+
+                                    <small>
+                                        @TempData["PaymentError"]
+                                    </small>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+                    <!-- Guest Info -->
+                    <div class="mb-5">
+
+                        <h5 class="fw-semibold mb-4">
+                            Guest Information
+                        </h5>
+
+                        <div class="d-flex flex-column gap-4">
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Guest Name</span>
+                                <span class="fw-semibold">@Model.GuestName</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Email Address</span>
+                                <span class="fw-semibold">@Model.GuestEmail</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Phone Number</span>
+                                <span class="fw-semibold">@Model.GuestPhoneNumber</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Stay Details -->
+                    <div>
+
+                        <h5 class="fw-semibold mb-4">
+                            Stay Details
+                        </h5>
+
+                        <div class="d-flex flex-column gap-4">
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Room Type</span>
+                                <span class="fw-semibold">@Model.RoomType</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Check In</span>
+                                <span class="fw-semibold">@Model.CheckInDate</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between border-bottom pb-3">
+                                <span class="text-muted">Check Out</span>
+                                <span class="fw-semibold">@Model.CheckOutDate</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-lg-4">
+
+            <div class="card border-0 bg-dark text-white shadow-sm rounded-4 sticky-top">
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <div class="mb-4">
+
+                        <span class="badge bg-light text-dark rounded-pill px-3 py-2 mb-3">
+                            Booking Summary
+                        </span>
+
+                        <h3 class="fw-bold mb-1">
+                            @Model.RoomType
+                        </h3>
+
+                        <p class="text-white-50 mb-0">
+                            Reservation ready for confirmation
+                        </p>
+
+                    </div>
+
+                    <hr class="border-secondary my-4" />
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-white-50">Check In</span>
+                        <span>@Model.CheckInDate</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-white-50">Check Out</span>
+                        <span>@Model.CheckOutDate</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="text-white-50">Guest</span>
+                        <span>@Model.GuestName</span>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 rounded-4 p-3 mb-4">
+
+                        <div class="small text-white-50 mb-1">
+                            Secure Payment
+                        </div>
+
+                        <div class="fw-semibold">
+                            Your booking will be confirmed instantly after payment.
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-3">
+
+                        <form asp-action="Confirm" method="post">
+
+                            <input type="hidden" asp-for="GuestName" />
+                            <input type="hidden" asp-for="GuestEmail" />
+                            <input type="hidden" asp-for="GuestPhoneNumber" />
+                            <input type="hidden" asp-for="RoomType" />
+                            <input type="hidden" asp-for="RoomId" />
+                            <input type="hidden" asp-for="CheckInDate" />
+                            <input type="hidden" asp-for="CheckOutDate" />
+
+                            <button type="submit"
+                                    class="btn btn-light text-dark rounded-pill py-3 fw-semibold w-100">
+
+                                <i class="bi bi-credit-card me-2"></i>
+                                Proceed to Payment
+
+                            </button>
+
+                        </form>
+
+                        <a asp-action="Create"
+                           class="btn btn-outline-light rounded-pill py-3">
+                            Edit Reservation
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

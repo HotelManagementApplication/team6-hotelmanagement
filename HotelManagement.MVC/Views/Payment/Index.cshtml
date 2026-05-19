@@ -1,0 +1,118 @@
+
+@model HotelManagement.MVC.ViewModels.ReservationViewModel
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-4 p-lg-5 text-center">
+
+                    <!-- Success Icon -->
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 d-inline-flex 
+                                    align-items-center justify-content-center 
+                                    rounded-circle"
+                             style="width: 90px; height: 90px;">
+
+                            <i class="bi bi-check2-circle text-success fs-1"></i>
+
+                        </div>
+                    </div>
+
+                    <!-- Heading -->
+                    <h1 class="fw-bold mb-3">
+                        Booking Confirmed
+                    </h1>
+
+                    <p class="text-muted mb-5">
+                        Your reservation has been successfully confirmed.
+                        A confirmation email will be sent shortly.
+                    </p>
+
+                    <!-- Reservation Summary -->
+                    <div class="border rounded-4 p-4 text-start mb-5 bg-light-subtle">
+
+                        <h5 class="fw-semibold mb-4">
+                            Reservation Details
+                        </h5>
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block mb-1">
+                                    Guest Name
+                                </span>
+
+                                <div class="fw-semibold">
+                                    @Model.GuestName
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block mb-1">
+                                    Room Type
+                                </span>
+
+                                <div class="fw-semibold">
+                                    @Model.RoomType
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block mb-1">
+                                    Check In
+                                </span>
+
+                                <div class="fw-semibold">
+                                    @Model.CheckInDate
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block mb-1">
+                                    Check Out
+                                </span>
+
+                                <div class="fw-semibold">
+                                    @Model.CheckOutDate
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+
+                        <a asp-controller="Hotels"
+                           asp-action="Index"
+                           class="btn btn-light border rounded-pill px-4 py-3">
+
+                            <i class="bi bi-building me-2"></i>
+                            Browse Hotels
+
+                        </a>
+
+                        <button class="btn btn-dark rounded-pill px-5 py-3">
+
+                            <i class="bi bi-download me-2"></i>
+                            Download Booking
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

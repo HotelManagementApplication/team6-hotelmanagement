@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+@{
+    var returnUrl = $"{Context.Request.Path}";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - StayGo</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HotelManagement.MVC.styles.css" asp-append-version="true" />
+
+    <style>
+            body {
+                background-color: #f8f9fa;
+            }
+
+            .navbar {
+                background-color: #ffffff;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .navbar-brand {
+                font-size: 1.4rem;
+                letter-spacing: 0.5px;
+            }
+
+            .nav-link {
+                font-weight: 500;
+                color: #495057 !important;
+                transition: 0.2s ease-in-out;
+            }
+
+            .nav-link:hover {
+                color: #000 !important;
+            }
+
+            .btn-brand {
+                background-color: #111827;
+                color: white;
+                border-radius: 999px;
+                padding: 0.55rem 1.2rem;
+                font-weight: 500;
+                transition: 0.2s ease-in-out;
+            }
+
+            .btn-brand:hover {
+                background-color: #000;
+                color: white;
+            }
+
+            .footer {
+                background-color: #ffffff;
+                padding: 1rem 0;
+                margin-top: 4rem;
+                border-top: 1px solid #e9ecef;
+            }
+
+            .container-main {
+                min-height: calc(100vh - 140px);
+            }
+
+            .navbar-toggler {
+                border: none;
+                box-shadow: none !important;
+            }
+
+            .form-control:focus,
+            .input-group-text:focus,
+            .form-control:active {
+                box-shadow: none !important;
+                border-color: #dee2e6 !important;
+                outline: none !important;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container">
+
+                <!-- Brand -->
+                <a class="navbar-brand fw-bold text-dark" href="/">
+                    <i class="bi bi-buildings me-2"></i>StayGo
+                </a>
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Nav Items -->
+                <div class="collapse navbar-collapse" id="navMenu">
+
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Hotels">
+                                Hotels
+                            </a>
+                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Admin">
+                                    Admin
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Staff") || User.IsInRole("Receptionist"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Staff">
+                                    Staff
+                                </a>
+                            </li>
+                        }
+
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated) 
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Bookings" asp-action="Index" class="nav-link">
+                                    Bookings
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item mt-3 mt-lg-0">
+                                <a asp-controller="Auth" asp-action="Logout" class="btn btn-brand ms-lg-2">
+                                    Logout
+                                </a>
+                            </li>
+                        }
+                        else 
+                        {
+                            <li class="nav-item mt-3 mt-lg-0">
+                                <a asp-controller="Auth" asp-action="Login" 
+                                    asp-route-returnUrl="@returnUrl"
+                                    class="btn btn-brand ms-lg-2">
+                                    Login
+                                </a>
+                            </li>
+
+                            <li class="nav-item mt-3 mt-lg-0">
+                                <a asp-controller="Auth" asp-action="Register" class="btn btn-brand ms-lg-2">
+                                    Register
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container container-main py-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-muted">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+
+            <div>
+                &copy; 2026 StayGo. All rights reserved.
+            </div>
+
+            <div>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">
+                    Privacy Policy
+                </a>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

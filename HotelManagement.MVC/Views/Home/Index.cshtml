@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container py-5">
+
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-5 text-center">
+
+            <!-- Welcome -->
+            <h1 class="fw-bold mb-3">
+                Welcome to Hotel Management System
+            </h1>
+
+            <p class="text-muted fs-5 mb-5">
+                Discover hotels, explore rooms, and manage reservations seamlessly.
+            </p>
+
+            <!-- Team Members -->
+            <div class="mb-5">
+
+                <h4 class="fw-semibold mb-4">
+                    Team Members
+                </h4>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+
+                    <span class="badge bg-light text-dark border px-4 py-3 rounded-pill">
+                        Aditya Bhardwaj
+                    </span>
+
+                    <span class="badge bg-light text-dark border px-4 py-3 rounded-pill">
+                        Shivansh Agrawal
+                    </span>
+
+                    <span class="badge bg-light text-dark border px-4 py-3 rounded-pill">
+                        Chitresh Malhan
+                    </span>
+
+                    <span class="badge bg-light text-dark border px-4 py-3 rounded-pill">
+                        Himanshu Rawat
+                    </span>
+
+                    <span class="badge bg-light text-dark border px-4 py-3 rounded-pill">
+                        Jasnoor Kaur
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- Redirect Button -->
+            <a asp-controller="Hotels"
+               asp-action="Index"
+               class="btn btn-dark rounded-pill px-5 py-3">
+
+                <i class="bi bi-building me-2"></i>
+                Explore Hotels
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

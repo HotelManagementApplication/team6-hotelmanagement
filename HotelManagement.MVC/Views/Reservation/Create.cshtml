@@ -1,0 +1,216 @@
+
+@model HotelManagement.MVC.ViewModels.ReservationViewModel
+
+@{
+    var roomType = Context.Session.GetString("RoomType");
+    if (roomType is null)
+        roomType = Model.RoomType;
+    
+    var roomId = Context.Session.GetInt32("RoomId");
+    if (roomId is null)
+        roomId = Model.RoomId;
+}
+
+<div class="container py-5">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a asp-controller="Hotels" asp-action="Details"
+           class="btn btn-light border rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Hotel
+        </a>
+    </div>
+
+    @if (TempData["ReservationError"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center">
+
+            <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+
+            <div>
+                <strong>Reservation Failed</strong>
+                <div class="mb-0">
+                    @TempData["ReservationError"]
+                </div>
+            </div>
+
+        </div>
+    }
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <!-- Header -->
+                    <div class="mb-5 text-center text-lg-start">
+
+                        @* <span class="badge bg-light text-dark border rounded-pill px-3 py-2 mb-3">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            Reservation
+                        </span> *@
+
+                        <h1 class="fw-bold mb-2">
+                            Complete Your Booking
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Fill in your details to confirm your reservation.
+                        </p>
+
+                    </div>
+
+                    <!-- Form -->
+                    <form asp-action="Create" method="post">
+
+                        <div class="row g-4">
+
+                            <!-- Guest Name -->
+                            <div class="col-md-6">
+                                <label asp-for="GuestName" class="form-label fw-semibold">
+                                    Guest Name
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+
+                                    <input asp-for="GuestName"
+                                           class="form-control border-start-0 py-3"
+                                           placeholder="Enter full name" />
+                                </div>
+                                <span asp-validation-for="GuestName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label asp-for="GuestEmail" class="form-label fw-semibold">
+                                    Email Address
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+
+                                    <input asp-for="GuestEmail"
+                                           class="form-control border-start-0 py-3"
+                                           placeholder="Enter email address" />
+                                </div>
+                                <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <label asp-for="GuestPhoneNumber" class="form-label fw-semibold">
+                                    Phone Number
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-telephone"></i>
+                                    </span>
+
+                                    <input asp-for="GuestPhoneNumber"
+                                        type="text"
+                                        inputmode="numeric"
+                                        class="form-control border-start-0 py-3"
+                                        placeholder="Enter phone number" />
+                                </div>
+                                <span asp-validation-for="GuestPhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <!-- Room Type -->
+                            <div class="col-md-6">
+                                <label asp-for="RoomType" class="form-label fw-semibold">
+                                    Room Type
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-door-open"></i>
+                                    </span>
+
+                                    <input asp-for="RoomType"
+                                        class="form-control border-start-0 py-3 bg-light"
+                                        placeholder="@roomType"
+                                        value="@roomType"
+                                        disabled />
+                                    
+                                    <input asp-for="RoomType" value="@roomType" hidden>
+                                    <input asp-for="RoomId" value="@roomId" hidden>
+                                </div>
+                                <span asp-validation-for="RoomType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Check In -->
+                            <div class="col-md-6">
+                                <label asp-for="CheckInDate" class="form-label fw-semibold">
+                                    Check In
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </span>
+
+                                    <input asp-for="CheckInDate"
+                                           type="date"
+                                           class="form-control border-start-0 py-3" />
+                                </div>
+                                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Check Out -->
+                            <div class="col-md-6">
+                                <label asp-for="CheckOutDate" class="form-label fw-semibold">
+                                    Check Out
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="bi bi-calendar2-check"></i>
+                                    </span>
+
+                                    <input asp-for="CheckOutDate"
+                                           type="date"
+                                           class="form-control border-start-0 py-3" />
+                                </div>
+                                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <!-- Divider -->
+                        <hr class="my-5" />
+
+                        <!-- Action -->
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+                            <p class="text-muted mb-0 small">
+                                Your reservation will be confirmed instantly.
+                            </p>
+
+                            <button type="submit"
+                                    class="btn btn-dark rounded-pill px-5 py-3">
+                                <i class="bi bi-check2-circle me-2"></i>
+                                Confirm Reservation
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

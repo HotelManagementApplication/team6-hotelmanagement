@@ -1,0 +1,130 @@
+@model IEnumerable<HotelManagement.MVC.ViewModels.HotelCardViewModel>
+
+@{
+    ViewData["Title"] = "Hotels";
+}
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="fw-bold mb-1">@ViewData["Title"]</h1>
+            <p class="text-muted mb-0">
+                Browse available hotels and explore details.
+            </p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="w-100 w-md-auto" style="max-width: 400px;">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input type="text"
+                       id="hotelSearch"
+                       class="form-control border-start-0"
+                       placeholder="Search by hotel or location..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotel Cards -->
+    <div class="row g-4" id="hotelContainer">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4 hotel-card"
+                 data-name="@item.Name.ToLower()"
+                 data-location="@item.Location.ToLower()">
+
+                <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                    <div class="card-body d-flex flex-column p-4">
+
+                        <!-- Hotel Name -->
+                        <h4 class="fw-semibold mb-3 text-dark">
+                            @Html.Raw(System.Net.WebUtility.HtmlDecode(item.Name))
+                        </h4>
+
+                        <!-- Description -->
+                        <p class="text-muted flex-grow-1 mb-4">
+                            @(item.Description?.Length > 120
+                                ? item.Description.Substring(0, 120) + "..."
+                                : item.Description)
+                        </p>
+
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                @item.Location
+                            </span>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="mt-auto">
+                            <form asp-action="Index" method="post">
+                                <input type="hidden"
+                                    name="hotelId"
+                                    value="@item.HotelId" />
+                                
+                                <button type="submit" 
+                                    class="btn btn-dark w-100 rounded-pill">
+                                    View Details
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Empty State -->
+    <div id="noResults" class="text-center py-5 d-none">
+        <h5 class="fw-semibold">No hotels found</h5>
+        <p class="text-muted mb-0">
+            Try searching with a different keyword.
+        </p>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById("hotelSearch");
+        const hotelCards = document.querySelectorAll(".hotel-card");
+        const noResults = document.getElementById("noResults");
+
+        searchInput.addEventListener("keyup", function () {
+
+            const searchValue = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            hotelCards.forEach(card => {
+
+                const name = card.dataset.name;
+                const location = card.dataset.location;
+
+                const matches =
+                    name.includes(searchValue) ||
+                    location.includes(searchValue);
+
+                if (matches) {
+                    card.style.display = "block";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            if (visibleCount === 0) {
+                noResults.classList.remove("d-none");
+            } else {
+                noResults.classList.add("d-none");
+            }
+        });
+    </script>
+}

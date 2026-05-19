@@ -1,0 +1,172 @@
+@model HotelManagement.MVC.ViewModels.HotelDetailsViewModel
+
+@{
+    ViewData["Title"] = "Hotel Details";
+}
+
+<div class="container py-5">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a asp-action="Index"
+           class="btn btn-light border rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Hotels
+        </a>
+    </div>
+
+    <!-- Hotel Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
+
+                <div>
+                    <h1 class="fw-bold mb-3">
+                        @Html.Raw(System.Net.WebUtility.HtmlDecode(Model.Name))
+                    </h1>
+
+                    <div class="mb-4">
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            @Model.Location
+                        </span>
+                    </div>
+
+                    <p class="text-muted fs-6 mb-0" style="line-height: 1.8;">
+                        @Model.Description
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Amenities -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-semibold mb-4">
+                        <i class="bi bi-stars me-2"></i>
+                        Amenities
+                    </h4>
+
+                    @if (Model.Amenities.Any())
+                    {
+                        <div class="d-flex flex-column gap-3">
+
+                            @foreach (var amenity in Model.Amenities)
+                            {
+                                <div class="border rounded-4 p-3 bg-light-subtle">
+
+                                    <h6 class="fw-semibold mb-1">
+                                        @amenity.Name
+                                    </h6>
+
+                                    <p class="text-muted small mb-0">
+                                        @amenity.Description
+                                    </p>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            No amenities available.
+                        </p>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-semibold mb-0">
+                            <i class="bi bi-door-open me-2"></i>
+                            Available Rooms
+                        </h4>
+                    </div>
+
+                    @if (Model.Rooms.Any())
+                    {
+                        <div class="row g-4">
+
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <div class="col-md-6">
+
+                                    <div class="border rounded-4 p-4 h-100">
+
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+
+                                            <div>
+                                                <h5 class="fw-semibold mb-1">
+                                                    @room.RoomType
+                                                </h5>
+
+                                                <span class="text-muted small">
+                                                    Max Occupancy: @room.MaxOccupancy
+                                                </span>
+                                            </div>
+
+                                            <span class="badge bg-dark rounded-pill px-3 py-2">
+                                                ₹@room.Price
+                                            </span>
+
+                                        </div>
+
+                                        @* <a asp-controller="Reservation"
+                                            asp-action="Create"
+                                            class="btn btn-outline-dark rounded-pill w-100">
+                                            Book Room
+                                        </a> *@
+                                        <form asp-action="Details" method="post">
+                                            <input type="hidden"
+                                                name="roomType"
+                                                value="@room.RoomType" />
+
+                                            <input type="hidden"
+                                                name="roomId"
+                                                value="@room.RoomId" />
+                                            
+                                            <button type="submit" 
+                                                class="btn btn-outline-dark w-100 rounded-pill">
+                                                View Details
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            No rooms available.
+                        </p>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
