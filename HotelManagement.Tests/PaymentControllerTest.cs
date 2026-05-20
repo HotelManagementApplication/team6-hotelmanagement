@@ -21,10 +21,6 @@ public class PaymentControllerTest
         _controller = new PaymentController(_serviceMock.Object);
     }
 
-    // =========================
-    // 4 POSITIVE TEST CASES
-    // =========================
-
     [Fact]
     public async Task GetPayments_ShouldReturnOk_WithApiResponse()
     {
@@ -156,9 +152,7 @@ public class PaymentControllerTest
         _serviceMock.Verify(s => s.UpdatePaymentAsync(1, dto), Times.Once);
     }
 
-    // =========================
-    // 4 NEGATIVE TEST CASES
-    // =========================
+    
 
     [Fact]
     public async Task GetPayment_ShouldThrowNotFoundException_WhenPaymentDoesNotExist()
