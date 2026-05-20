@@ -38,9 +38,6 @@ public class AuthController(ApiService apiService) : Controller
             var token = response.Data!["token"];
             var role = response.Data!["role"];
 
-            System.Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
-            System.Console.WriteLine(role);
-
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Email),
