@@ -160,8 +160,9 @@
                                     </span>
 
                                     <input asp-for="CheckInDate"
-                                           type="date"
-                                           class="form-control border-start-0 py-3" />
+       type="date"
+       min="@(DateTime.Today.ToString("yyyy-MM-dd"))"
+       class="form-control border-start-0 py-3" />
                                 </div>
                                 <span asp-validation-for="CheckInDate" class="text-danger"></span>
                             </div>
@@ -177,9 +178,10 @@
                                         <i class="bi bi-calendar2-check"></i>
                                     </span>
 
-                                    <input asp-for="CheckOutDate"
-                                           type="date"
-                                           class="form-control border-start-0 py-3" />
+                                   <<input asp-for="CheckOutDate"
+       type="date"
+       min="@(DateTime.Today.ToString("yyyy-MM-dd"))"
+       class="form-control border-start-0 py-3" />
                                 </div>
                                 <span asp-validation-for="CheckOutDate" class="text-danger"></span>
                             </div>
